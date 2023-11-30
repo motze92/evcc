@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/andig/gosunspec/typelabel"
 	"github.com/evcc-io/evcc/util"
 	"github.com/evcc-io/evcc/util/modbus"
 	gridx "github.com/grid-x/modbus"
@@ -275,7 +276,40 @@ var _ SetFloatProvider = (*Modbus)(nil)
 func (m *Modbus) FloatSetter(_ string) (func(float64) error, error) {
 	op := m.op.MBMD
 	if op.FuncCode == 0 {
-		return nil, errors.New("modbus plugin does not support writing to sunspec")
+		// return nil, errors.New("modbus plugin does not support writing to sunspec")
+		dev, ok := m.device.(*sunspec.SunSpec)
+		if !ok {
+			return nil, errors.New("not a sunspec device")
+		}
+
+		block, point, err := dev.QueryPointAny(
+			m.conn,
+			m.op.SunSpec.Model,
+			m.op.SunSpec.Block,
+			m.op.SunSpec.Point,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("sunspec write: model %d block %d point %s: %w", m.op.SunSpec.Model, m.op.SunSpec.Block, m.op.SunSpec.Point, err)
+		}
+
+		if typ := point.Type(); typ != typelabel.Uint16 {
+			return nil, fmt.Errorf("sunspec write: unsupported point type: %s", typ)
+		}
+
+		// if err := block.Read(point.Id()); err != nil {
+		// 	return nil, fmt.Errorf("sunspec write: initial read failed: %w", err)
+		// }
+
+		return func(val float64) error {
+			// sv := point.ScaledValue()
+			// _ = sv
+
+			uval := uint16(val / 1)
+			point.SetUint16(uval)
+
+			err := block.Write(point.Id())
+			return err
+		}, nil
 	}
 
 	// need multiple registers for float

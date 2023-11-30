@@ -1,0 +1,54 @@
+template: sunspec-battery-control
+products:
+  - description:
+      de: Sunspec Batterie (Model 802)
+      en: Sunspec Battery (Model 802)
+group: generic
+params:
+  - name: usage
+    choice: ["battery"]
+  - name: modbus
+    choice: ["tcpip", "rs485"]
+  - name: capacity
+    advanced: true
+  # battery control (model 802)
+  - name: minsoc
+    type: number
+    advanced: true
+  - name: maxsoc
+    type: number
+    advanced: true
+render: |
+  {{- if eq .usage "battery" }}
+  type: custom
+  power:
+    source: calc
+    add:
+    - source: modbus
+      {{- include "modbus" . | indent 4 }}
+      model: sunspec
+      value: 160:3:DCW # mppt 3 (charge)
+      scale: -1
+    # - source: modbus
+    #   {- include "modbus" . | indent 4 }
+    #   model: sunspec
+    #   value: 160:4:DCW # mppt 4 (discharge)
+  # energy:
+  #   source: modbus
+  #   {- include "modbus" . | indent 2 }
+  #   model: sunspec
+  #   value: DCEnergyS4 # mppt 4 (discharge)
+  soc:
+    source: modbus
+    {{- include "modbus" . | indent 2 }}
+    model: sunspec
+    value: 802:0:SoC
+  limitsoc: # model 802
+    source: modbus
+    {{- include "modbus" . | indent 2 }}
+    model: sunspec
+    value: 802:0:SoCRsvMin
+  capacity: {{ .capacity }} # kWh
+  minsoc: {{ .minsoc }} # %
+  maxsoc: {{ .maxsoc }} # %
+  {{- end }}
