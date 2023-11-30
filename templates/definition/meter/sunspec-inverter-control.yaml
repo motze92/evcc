@@ -49,21 +49,21 @@ render: |
             source: modbus
             {{- include "modbus" . | indent 10 }}
             model: sunspec
-            value: ChaGriSet
+            value: 124:0:ChaGriSet
         - source: const
           value: 0
           set:
             source: modbus
             {{- include "modbus" . | indent 10 }}
             model: sunspec
-            value: StorCtl_Mod
+            value: 124:0:StorCtl_Mod
         - source: const
           value: 100 # %
           set:
             source: modbus
             {{- include "modbus" . | indent 10 }}
             model: sunspec
-            value: OutWRte
+            value: 124:0:OutWRte
     - case: 2 # hold
       set:
         source: sequence
@@ -74,21 +74,21 @@ render: |
             source: modbus
             {{- include "modbus" . | indent 10 }}
             model: sunspec
-            value: ChaGriSet
+            value: 124:0:ChaGriSet
         - source: const
           value: 2
           set:
             source: modbus
             {{- include "modbus" . | indent 10 }}
             model: sunspec
-            value: StorCtl_Mod
+            value: 124:0:StorCtl_Mod
         - source: const
           value: 0 # %
           set:
             source: modbus
             {{- include "modbus" . | indent 10 }}
             model: sunspec
-            value: OutWRte
+            value: 124:0:OutWRte
     - case: 3 # charge
       set:
         source: sequence
@@ -99,21 +99,21 @@ render: |
             source: modbus
             {{- include "modbus" . | indent 10 }}
             model: sunspec
-            value: ChaGriSet
+            value: 124:0:ChaGriSet
         - source: const
           value: 2
           set:
             source: modbus
             {{- include "modbus" . | indent 10 }}
             model: sunspec
-            value: StorCtl_Mod
+            value: 124:0:StorCtl_Mod
         - source: const
           value: -100 # %
           set:
             source: modbus
             {{- include "modbus" . | indent 10 }}
             model: sunspec
-            value: OutWRte
+            value: 124:0:OutWRte
   {{- if .capacity }}
   capacity: {{ .capacity }} # kWh
   {{- end }}
