@@ -78,7 +78,6 @@ export default {
 	name: "VehicleSoc",
 	props: {
 		connected: Boolean,
-		vehiclePresent: Boolean,
 		vehicleSoc: Number,
 		vehicleTargetSoc: Number,
 		enabled: Boolean,
